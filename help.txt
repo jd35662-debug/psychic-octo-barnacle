@@ -1,0 +1,33 @@
+Undertail-Style Mini RPG
+Update 0.0.1
+
+What we have now
+- A simple top-down playable demo in a single page web app.
+- Movement controls: WASD or Arrow Keys.
+- Interact with E.
+
+Rooms and progression
+- First room (courtyard):
+  - Large giant door at the top.
+  - Small side door on the right that leads to training grounds.
+- Training grounds:
+  - Three class pads (Warrior, Mage, Rogue).
+  - Stand on a class pad and press E to select class.
+  - Class selection adds a small colored square above the player.
+
+Doors and keys
+- The giant door in the first room requires "Key ???".
+- Using "Key ???" unlocks the giant door and consumes the key.
+
+Inventory and items
+- Inventory is visible in the HUD.
+- Item table lists all objects that can appear in inventory.
+- Includes generic keys and quest items.
+- "Key ???" is always shown in grey.
+
+Mode slider
+- Dev mode: shows the item table.
+- Customers mode: hides the item table.
+
+Visual style
+- Uses simple stand-in color textures for map, doors, pads, and player.
