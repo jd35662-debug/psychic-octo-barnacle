@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Undertail Door Demo</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <section class="game-panel">
+        <h1>Undertail-Style Mini RPG</h1>
+        <canvas id="game" width="800" height="500" aria-label="Game canvas"></canvas>
+        <p class="hint">
+          Move with arrow keys or WASD. Press <strong>E</strong> to interact. The giant door in the first room needs
+          <strong>Key ???</strong>.
+        </p>
+      </section>
+      <aside class="hud">
+        <h2>Inventory</h2>
+        <ul id="inventory"></ul>
+
+        <div class="mode-switcher">
+          <label for="mode-slider">Mode: <span id="mode-label">Dev</span></label>
+          <input id="mode-slider" type="range" min="0" max="1" step="1" value="0" aria-label="Mode slider" />
+          <p class="mode-help">0 = Dev (item table shown), 1 = Customers (item table hidden)</p>
+        </div>
+
+        <section id="item-table-section">
+          <h2>Item Table</h2>
+          <p class="table-caption">All objects that can appear in inventory:</p>
+          <table id="item-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </section>
+
+        <h2>Message</h2>
+        <p id="message">You wake in front of an ancient sealed gate.</p>
+      </aside>
+    </main>
+    <script src="game.js"></script>
+  </body>
+</html>

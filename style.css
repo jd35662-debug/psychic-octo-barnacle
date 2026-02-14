@@ -1,0 +1,122 @@
+:root {
+  color-scheme: dark;
+  font-family: "Trebuchet MS", Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #121015;
+  color: #efe7ff;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1rem;
+  padding: 1rem;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.game-panel,
+.hud {
+  background: #1a1622;
+  border: 2px solid #413563;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 0 0 2px #000 inset;
+}
+
+h1,
+h2 {
+  margin-top: 0;
+}
+
+#game {
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  background: #0b0b0f;
+  border: 2px solid #47396b;
+}
+
+.hint {
+  margin: 0.6rem 0 0;
+  font-size: 0.95rem;
+  color: #c5b7eb;
+}
+
+#inventory {
+  padding-left: 1.2rem;
+  margin-top: 0;
+}
+
+.key-unknown {
+  color: #8a8a8a;
+}
+
+.table-caption {
+  margin: 0.2rem 0 0.5rem;
+  color: #c5b7eb;
+  font-size: 0.9rem;
+}
+
+#item-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-bottom: 0.9rem;
+}
+
+#item-table th,
+#item-table td {
+  border: 1px solid #352c4d;
+  padding: 0.35rem;
+  text-align: left;
+}
+
+#item-table th {
+  background: #241d35;
+}
+
+.mode-switcher {
+  margin: 0.8rem 0;
+  padding: 0.55rem;
+  border: 1px solid #352c4d;
+  border-radius: 8px;
+  background: #13111a;
+}
+
+.mode-switcher label {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+#mode-slider {
+  width: 100%;
+}
+
+.mode-help {
+  margin: 0.35rem 0 0;
+  color: #ab9ccc;
+  font-size: 0.8rem;
+}
+
+.hidden {
+  display: none;
+}
+
+#message {
+  min-height: 4rem;
+  margin: 0;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: #13111a;
+  border: 1px solid #30264b;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
