@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Storm Castle Rescue Princess - Map 1</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #05070f; font-family: Arial, sans-serif; }
+    #game { width: 100%; height: 100%; display: block; }
+    .hud {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      color: #e6f4ff;
+      background: rgba(5, 10, 18, 0.72);
+      border: 1px solid rgba(230, 244, 255, 0.35);
+      border-radius: 8px;
+      padding: 10px 14px;
+      line-height: 1.4;
+      max-width: 340px;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 5px 14px rgba(0,0,0,0.35);
+    }
+    .hud h1 { margin: 0 0 4px 0; font-size: 16px; }
+    .hud p { margin: 3px 0; font-size: 13px; }
+    #status { font-weight: bold; color: #9be2ff; }
+  </style>
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <div class="hud">
+    <h1>Map 1: Storm Castle</h1>
+    <p><strong>Goal:</strong> Reach the princess in the tower.</p>
+    <p><strong>Move:</strong> WASD / Arrow Keys</p>
+    <p><strong>Status:</strong> <span id="status">Fight through the storm...</span></p>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.161.0/build/three.module.js';
+
+    const canvas = document.getElementById('game');
+    const statusEl = document.getElementById('status');
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x0b1020, 0.055);
+
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 200);
+    camera.position.set(0, 2.5, 8);
+
+    const ambient = new THREE.AmbientLight(0x5e6c9b, 0.7);
+    scene.add(ambient);
+
+    const moonLight = new THREE.DirectionalLight(0xa0b9ff, 0.75);
+    moonLight.position.set(-8, 18, -4);
+    moonLight.castShadow = true;
+    moonLight.shadow.mapSize.set(1024, 1024);
+    moonLight.shadow.camera.left = -20;
+    moonLight.shadow.camera.right = 20;
+    moonLight.shadow.camera.top = 20;
+    moonLight.shadow.camera.bottom = -20;
+    scene.add(moonLight);
+
+    const flash = new THREE.PointLight(0xbddcff, 0, 50);
+    flash.position.set(0, 10, 0);
+    scene.add(flash);
+
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(120, 120),
+      new THREE.MeshStandardMaterial({ color: 0x202b29, roughness: 0.9 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    function buildCastle() {
+      const group = new THREE.Group();
+      const stone = new THREE.MeshStandardMaterial({ color: 0x6f7586, roughness: 0.85 });
+
+      const keep = new THREE.Mesh(new THREE.BoxGeometry(9, 8, 9), stone);
+      keep.position.y = 4;
+      keep.castShadow = keep.receiveShadow = true;
+      group.add(keep);
+
+      const towerGeo = new THREE.CylinderGeometry(1.6, 1.8, 11, 12);
+      const towerPositions = [
+        [5.4, 5.5, 5.4],
+        [-5.4, 5.5, 5.4],
+        [5.4, 5.5, -5.4],
+        [-5.4, 5.5, -5.4]
+      ];
+
+      towerPositions.forEach(([x, y, z]) => {
+        const tower = new THREE.Mesh(towerGeo, stone);
+        tower.position.set(x, y, z);
+        tower.castShadow = tower.receiveShadow = true;
+        group.add(tower);
+      });
+
+      const gate = new THREE.Mesh(
+        new THREE.BoxGeometry(2.4, 3.2, 0.8),
+        new THREE.MeshStandardMaterial({ color: 0x2f221b, roughness: 0.7 })
+      );
+      gate.position.set(0, 1.6, 4.9);
+      gate.castShadow = gate.receiveShadow = true;
+      group.add(gate);
+
+      return group;
+    }
+
+    const castle = buildCastle();
+    castle.position.set(0, 0, -26);
+    scene.add(castle);
+
+    const player = new THREE.Mesh(
+      new THREE.CapsuleGeometry(0.45, 0.8, 6, 10),
+      new THREE.MeshStandardMaterial({ color: 0x57d4ff, roughness: 0.45 })
+    );
+    player.position.set(0, 0.95, 12);
+    player.castShadow = true;
+    scene.add(player);
+
+    const princess = new THREE.Group();
+    const gown = new THREE.Mesh(
+      new THREE.ConeGeometry(0.55, 1.4, 10),
+      new THREE.MeshStandardMaterial({ color: 0xff88c2, roughness: 0.5 })
+    );
+    gown.position.y = 0.7;
+    const head = new THREE.Mesh(
+      new THREE.SphereGeometry(0.3, 18, 18),
+      new THREE.MeshStandardMaterial({ color: 0xffddb4, roughness: 0.4 })
+    );
+    head.position.y = 1.7;
+    princess.add(gown, head);
+    princess.position.set(0, 9.5, -26);
+    princess.visible = true;
+    scene.add(princess);
+
+    const clock = new THREE.Clock();
+    const keys = {};
+    let rescued = false;
+
+    addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
+    addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
+
+    function handleMovement(dt) {
+      const speed = 6;
+      const move = new THREE.Vector3();
+
+      if (keys['w'] || keys['arrowup']) move.z -= 1;
+      if (keys['s'] || keys['arrowdown']) move.z += 1;
+      if (keys['a'] || keys['arrowleft']) move.x -= 1;
+      if (keys['d'] || keys['arrowright']) move.x += 1;
+
+      if (move.lengthSq()) {
+        move.normalize().multiplyScalar(speed * dt);
+        player.position.add(move);
+        player.position.x = THREE.MathUtils.clamp(player.position.x, -16, 16);
+        player.position.z = THREE.MathUtils.clamp(player.position.z, -36, 16);
+      }
+    }
+
+    function updateCamera() {
+      const targetPos = new THREE.Vector3(player.position.x, player.position.y + 1.8, player.position.z + 7.5);
+      camera.position.lerp(targetPos, 0.08);
+      camera.lookAt(player.position.x, 1, player.position.z - 6);
+    }
+
+    function animate() {
+      const dt = Math.min(clock.getDelta(), 0.05);
+      handleMovement(dt);
+      updateCamera();
+
+      // lightning pulses
+      const stormRoll = Math.random();
+      if (stormRoll > 0.985) {
+        flash.intensity = 7;
+        flash.position.set((Math.random() - 0.5) * 20, 11 + Math.random() * 8, -20 + Math.random() * 20);
+      } else {
+        flash.intensity *= 0.86;
+      }
+
+      princess.rotation.y += 0.01;
+
+      if (!rescued && player.position.distanceTo(princess.position) < 2.2) {
+        rescued = true;
+        statusEl.textContent = 'Princess rescued! Map 1 complete.';
+        statusEl.style.color = '#7dff9d';
+        player.material.color.set(0x98ffb8);
+      }
+
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+
+    addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    animate();
+  </script>
+</body>
+</html>
