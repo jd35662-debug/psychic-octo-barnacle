@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#172554"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <radialGradient id="moon" cx="50%" cy="28%" r="22%">
+      <stop offset="0%" stop-color="#fff7d4" stop-opacity="0.92"/>
+      <stop offset="100%" stop-color="#fff7d4" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#sky)"/>
+  <rect width="1280" height="720" fill="url(#moon)"/>
+  <g fill="#1e293b">
+    <path d="M0 560L120 420L170 500L240 390L320 510L400 410L500 560H0Z"/>
+    <path d="M380 560L520 320L610 460L700 280L780 450L860 360L940 560H380Z"/>
+    <path d="M780 560L930 410L1000 500L1060 370L1140 510L1220 430L1280 560H780Z"/>
+  </g>
+  <g fill="#334155" fill-opacity="0.85">
+    <rect x="130" y="330" width="80" height="230"/>
+    <rect x="540" y="280" width="120" height="280"/>
+    <rect x="1040" y="350" width="90" height="210"/>
+  </g>
+  <rect y="560" width="1280" height="160" fill="#050816"/>
+  <path d="M0 630C180 590 300 680 470 640S760 580 920 620S1140 680 1280 630V720H0Z" fill="#111827"/>
+</svg>
