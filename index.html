@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Halo of the Dead</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="layout">
+    <section class="game-shell">
+      <div class="title-row">
+        <div>
+          <p class="eyebrow">Arcade co-op rail shooter</p>
+          <h1>Halo of the Dead</h1>
+          <p class="subtitle">
+            Point-and-shoot through angelic ruins, demon hives, and monster nests.
+            Open the page in a second browser tab or window to join as Player 2.
+          </p>
+        </div>
+        <div class="high-score-card">
+          <span>High Score</span>
+          <strong id="highScoreValue">0</strong>
+        </div>
+      </div>
+
+      <div class="hud" id="hud">
+        <div class="hud-block"><span>Level</span><strong id="levelName">Cathedral Gate</strong></div>
+        <div class="hud-block"><span>Wave</span><strong id="waveValue">1 / 3</strong></div>
+        <div class="hud-block"><span>Score</span><strong id="scoreValue">0</strong></div>
+        <div class="hud-block"><span>Health</span><strong id="healthValue">100</strong></div>
+        <div class="hud-block"><span>Player</span><strong id="playerRole">Player 1</strong></div>
+        <div class="hud-block"><span>Status</span><strong id="sessionState">Waiting</strong></div>
+      </div>
+
+      <div class="canvas-frame">
+        <canvas id="gameCanvas" width="1280" height="720" aria-label="Halo of the Dead game area"></canvas>
+        <div class="overlay-card hidden" id="overlayCard">
+          <h2 id="overlayTitle">Ready?</h2>
+          <p id="overlayText">Press Start to begin your run.</p>
+          <button id="overlayButton" type="button">Start Run</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="control-panel">
+      <section class="panel-section">
+        <h2>Mission Brief</h2>
+        <ul>
+          <li>Move your cursor to aim. Click or tap to blast enemies.</li>
+          <li>The first tab becomes Player 1 and hosts the match.</li>
+          <li>The second tab joins automatically as Player 2 co-op support.</li>
+          <li>Clear three themed levels with escalating waves and miniboss pressure.</li>
+        </ul>
+      </section>
+
+      <section class="panel-section">
+        <div class="panel-heading">
+          <h2>Skins</h2>
+          <span id="skinTypeLabel">Type 1 · Reskin</span>
+        </div>
+        <div class="skin-grid" id="skinGrid"></div>
+        <p class="panel-note">
+          Type 1 skins reskin the arena. Type 2 skins also shift enemy spawn patterns.
+        </p>
+      </section>
+
+      <section class="panel-section">
+        <h2>Controls</h2>
+        <div class="button-row">
+          <button id="startButton" type="button">Start Run</button>
+          <button id="resetButton" type="button" class="secondary">Reset</button>
+        </div>
+      </section>
+
+      <section class="panel-section legend">
+        <h2>Bestiary</h2>
+        <div class="legend-item"><span class="swatch demon"></span> Demon raiders</div>
+        <div class="legend-item"><span class="swatch angel"></span> Fallen angels</div>
+        <div class="legend-item"><span class="swatch monster"></span> Monstrous titans</div>
+      </section>
+    </aside>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>

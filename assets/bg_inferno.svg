@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <defs>
+    <linearGradient id="lava" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#451a03"/>
+      <stop offset="100%" stop-color="#120202"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#lava)"/>
+  <g fill="#7f1d1d" fill-opacity="0.6">
+    <circle cx="180" cy="140" r="80"/>
+    <circle cx="1040" cy="180" r="120"/>
+    <circle cx="700" cy="120" r="60"/>
+  </g>
+  <g fill="#1f2937">
+    <path d="M0 580L100 450L190 560L270 410L350 560L430 390L520 560H0Z"/>
+    <path d="M480 580L620 330L700 540L790 300L860 520L950 340L1040 580H480Z"/>
+    <path d="M980 580L1100 430L1180 560L1240 420L1280 580H980Z"/>
+  </g>
+  <rect y="580" width="1280" height="140" fill="#09090b"/>
+  <path d="M0 660C160 610 250 710 420 660S760 600 940 650S1120 700 1280 650V720H0Z" fill="#ef4444" fill-opacity="0.35"/>
+</svg>
