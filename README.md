@@ -20,8 +20,8 @@ python3 -m http.server 8000
 Then open `http://localhost:8000`.
 
 ## Controls
-- `W` / `S`: azimuth rotation
-- `A` / `D`: elevation rotation
+- `W` / `S`: elevation rotation
+- `A` / `D`: azimuth rotation
 - `Space`: output current camera/orbit values
 
 The output box includes object type, orbit values, and resulting yaw/pitch-friendly values for prompts.

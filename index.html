@@ -55,8 +55,8 @@
 
       <div class="help">
         Controls:<br>
-        W/S = azimuth left/right<br>
-        A/D = elevation up/down<br>
+        W/S = elevation up/down<br>
+        A/D = azimuth left/right<br>
         Space = output current prompt
       </div>
     </aside>
@@ -186,10 +186,10 @@
         generateOutput();
         return;
       }
-      if (e.code === 'KeyW') state.azimuth -= state.stepDeg;
-      else if (e.code === 'KeyS') state.azimuth += state.stepDeg;
-      else if (e.code === 'KeyA') state.elevation = clampElevation(state.elevation + state.stepDeg);
-      else if (e.code === 'KeyD') state.elevation = clampElevation(state.elevation - state.stepDeg);
+      if (e.code === 'KeyW') state.elevation = clampElevation(state.elevation + state.stepDeg);
+      else if (e.code === 'KeyS') state.elevation = clampElevation(state.elevation - state.stepDeg);
+      else if (e.code === 'KeyA') state.azimuth -= state.stepDeg;
+      else if (e.code === 'KeyD') state.azimuth += state.stepDeg;
       else return;
       syncInputs();
       updateCamera();
