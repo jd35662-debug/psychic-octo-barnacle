@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
-"""
-Simple 3D camera-on-sphere helper.
-
-- A 3D model is represented by a target point in space.
-- A second object (named "chamra" per request) is treated like a camera.
-- The chamra is locked to a sphere centered on the model.
-- The chamra always faces the model.
-- The script outputs useful angles for AI image prompts.
-"""
+"""Simple 3D camera orbit helper for AI image prompts."""
 
 from __future__ import annotations
 
@@ -30,63 +22,61 @@ class Vec3:
 
 
 def spherical_to_cartesian(radius: float, azimuth_deg: float, elevation_deg: float, center: Vec3) -> Vec3:
-    """Convert spherical coordinates to cartesian position around center."""
     az = math.radians(azimuth_deg)
     el = math.radians(elevation_deg)
-
-    x = center.x + radius * math.cos(el) * math.cos(az)
-    y = center.y + radius * math.sin(el)
-    z = center.z + radius * math.cos(el) * math.sin(az)
-    return Vec3(x, y, z)
+    return Vec3(
+        center.x + radius * math.cos(el) * math.cos(az),
+        center.y + radius * math.sin(el),
+        center.z + radius * math.cos(el) * math.sin(az),
+    )
 
 
 def look_at_angles(from_pos: Vec3, to_pos: Vec3) -> tuple[float, float, float]:
-    """
-    Return yaw, pitch, and distance needed for from_pos to face to_pos.
-
-    yaw   : rotation around vertical axis (degrees)
-    pitch : up/down angle (degrees)
-    dist  : distance to target
-    """
     d = to_pos - from_pos
     dist = d.length()
     yaw = math.degrees(math.atan2(d.z, d.x))
-    horiz = math.sqrt(d.x**2 + d.z**2)
-    pitch = math.degrees(math.atan2(d.y, horiz))
+    horizontal = math.sqrt(d.x**2 + d.z**2)
+    pitch = math.degrees(math.atan2(d.y, horizontal))
     return yaw, pitch, dist
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Chamra on sphere looking at a 3D model")
-    parser.add_argument("--model-x", type=float, default=0.0)
-    parser.add_argument("--model-y", type=float, default=0.0)
-    parser.add_argument("--model-z", type=float, default=0.0)
-    parser.add_argument("--radius", type=float, default=5.0, help="Sphere radius for chamra")
-    parser.add_argument("--azimuth", type=float, default=45.0, help="Horizontal orbit angle (deg)")
-    parser.add_argument("--elevation", type=float, default=20.0, help="Vertical orbit angle (deg)")
+    parser = argparse.ArgumentParser(description="Camera locked to a sphere around a 3D object")
+    parser.add_argument("--target-x", type=float, default=0.0)
+    parser.add_argument("--target-y", type=float, default=0.0)
+    parser.add_argument("--target-z", type=float, default=0.0)
+    parser.add_argument("--radius", type=float, default=5.0, help="Camera orbit radius")
+    parser.add_argument("--azimuth", type=float, default=45.0, help="Current horizontal angle (deg)")
+    parser.add_argument("--elevation", type=float, default=20.0, help="Current vertical angle (deg)")
+    parser.add_argument("--rotate-azimuth", type=float, default=0.0, help="Additive horizontal rotation control (deg)")
+    parser.add_argument("--rotate-elevation", type=float, default=0.0, help="Additive vertical rotation control (deg)")
+    parser.add_argument("--set-to-zero", action="store_true", help="Reset azimuth/elevation to 0 before rotating")
     args = parser.parse_args()
 
-    model = Vec3(args.model_x, args.model_y, args.model_z)
+    target = Vec3(args.target_x, args.target_y, args.target_z)
 
-    # "chamra" (camera) position on the sphere around the model
-    chamra = spherical_to_cartesian(args.radius, args.azimuth, args.elevation, model)
+    base_azimuth = 0.0 if args.set_to_zero else args.azimuth
+    base_elevation = 0.0 if args.set_to_zero else args.elevation
 
-    # lock orientation so chamra always faces model
-    yaw, pitch, distance = look_at_angles(chamra, model)
+    final_azimuth = base_azimuth + args.rotate_azimuth
+    final_elevation = max(-89.0, min(89.0, base_elevation + args.rotate_elevation))
 
-    print("3D model position:", model)
-    print("Chamra position (locked to sphere):", chamra)
-    print(f"Distance (sphere radius): {distance:.4f}")
-    print(f"Facing angles -> yaw: {yaw:.2f}°, pitch: {pitch:.2f}°")
+    camera = spherical_to_cartesian(args.radius, final_azimuth, final_elevation, target)
+    yaw, pitch, distance = look_at_angles(camera, target)
 
-    prompt = (
-        f"3d subject at ({model.x:.2f},{model.y:.2f},{model.z:.2f}), "
-        f"camera/chamra on spherical rig radius {args.radius:.2f}, "
-        f"azimuth {args.azimuth:.2f} deg, elevation {args.elevation:.2f} deg, "
+    print("Target 3D object:", target)
+    print("Camera position (locked to sphere):", camera)
+    print(f"Orbit distance: {distance:.4f}")
+    print(f"Control angles -> azimuth: {final_azimuth:.2f}°, elevation: {final_elevation:.2f}°")
+    print(f"Facing angles  -> yaw: {yaw:.2f}°, pitch: {pitch:.2f}°")
+
+    print("\nAI prompt line:")
+    print(
+        f"3d subject at ({target.x:.2f},{target.y:.2f},{target.z:.2f}), "
+        f"camera on sphere radius {args.radius:.2f}, "
+        f"orbit azimuth {final_azimuth:.2f} deg, orbit elevation {final_elevation:.2f} deg, "
         f"camera looking at subject, yaw {yaw:.2f} deg, pitch {pitch:.2f} deg"
     )
-    print("\nAI prompt line:")
-    print(prompt)
 
 
 if __name__ == "__main__":

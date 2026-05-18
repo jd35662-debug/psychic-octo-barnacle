@@ -1,20 +1,27 @@
-# Simple 3D "chamra" orbit helper
+# Simple 3D camera orbit helper
 
-This repo includes a tiny Python program that:
+This Python script gives simple controls to rotate a camera around a first 3D object.
 
-- Defines a 3D model position.
-- Places a second object called **chamra** on a sphere around the model.
-- Keeps the chamra always facing the model.
-- Prints the resulting angle output (yaw + pitch) for use in AI image prompts.
+## What it does
+
+- Places a **camera** on a sphere around a target object.
+- Keeps the camera always facing the target.
+- Prints the final orbit angles and look-at angles.
+- Includes a `--set-to-zero` option to reset azimuth/elevation before applying rotation controls.
 
 ## Run
 
 ```bash
-python3 camera_orbit_prompt.py --radius 6 --azimuth 130 --elevation 15
+python3 camera_orbit_prompt.py \
+  --radius 6 \
+  --azimuth 45 \
+  --elevation 20 \
+  --rotate-azimuth 30 \
+  --rotate-elevation -5
 ```
 
-## Example output
+## Reset angles to zero first
 
-- chamra position on sphere
-- facing yaw and pitch angles
-- one AI-friendly prompt line
+```bash
+python3 camera_orbit_prompt.py --set-to-zero --rotate-azimuth 90 --rotate-elevation 10
+```
