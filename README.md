@@ -1,27 +1,27 @@
-# Simple 3D camera orbit helper
+# 3D camera orbit tool (WASD + Space)
 
-This Python script gives simple controls to rotate a camera around a first 3D object.
+This rebuild replaces the old script with a simple interactive 3D page.
 
-## What it does
-
-- Places a **camera** on a sphere around a target object.
-- Keeps the camera always facing the target.
-- Prints the final orbit angles and look-at angles.
-- Includes a `--set-to-zero` option to reset azimuth/elevation before applying rotation controls.
+## Features
+- **3D object selector** (box, sphere, torus, cone, cylinder).
+- **Settings panel** for orbit radius, azimuth, elevation, and WASD step size.
+- Camera is locked to a sphere around the first object and always faces it.
+- **WASD** rotates the camera around the object.
+- **Space bar** triggers output generation.
+- **Set angles to 0** button resets azimuth/elevation.
 
 ## Run
+Use any static server, for example:
 
 ```bash
-python3 camera_orbit_prompt.py \
-  --radius 6 \
-  --azimuth 45 \
-  --elevation 20 \
-  --rotate-azimuth 30 \
-  --rotate-elevation -5
+python3 -m http.server 8000
 ```
 
-## Reset angles to zero first
+Then open `http://localhost:8000`.
 
-```bash
-python3 camera_orbit_prompt.py --set-to-zero --rotate-azimuth 90 --rotate-elevation 10
-```
+## Controls
+- `W` / `S`: azimuth rotation
+- `A` / `D`: elevation rotation
+- `Space`: output current camera/orbit values
+
+The output box includes object type, orbit values, and resulting yaw/pitch-friendly values for prompts.

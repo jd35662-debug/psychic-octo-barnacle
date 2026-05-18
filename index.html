@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>3D Camera Orbit Prompt Tool</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; font-family: system-ui, sans-serif; background: #111; color: #eee; }
+    #app { display: grid; grid-template-columns: 320px 1fr; height: 100vh; }
+    #panel { padding: 14px; background: #1a1a1a; border-right: 1px solid #333; overflow: auto; }
+    h1 { font-size: 18px; margin: 0 0 10px; }
+    h2 { font-size: 15px; margin: 14px 0 8px; }
+    label { display: block; margin: 7px 0 3px; font-size: 13px; }
+    input, select, button, textarea { width: 100%; background: #222; color: #eee; border: 1px solid #444; border-radius: 6px; padding: 7px; }
+    button { cursor: pointer; font-weight: 600; }
+    .help { font-size: 12px; color: #bbb; margin-top: 10px; }
+    #renderHost { position: relative; }
+    #renderHost canvas { width: 100% !important; height: 100% !important; display: block; }
+    #toast { position: absolute; right: 12px; bottom: 12px; background: #000a; border: 1px solid #444; padding: 8px 10px; border-radius: 8px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <aside id="panel">
+      <h1>Camera Orbit Settings</h1>
+
+      <h2>3D Object Selector</h2>
+      <label for="objectType">Object</label>
+      <select id="objectType">
+        <option value="box">Box</option>
+        <option value="sphere">Sphere</option>
+        <option value="torus">Torus</option>
+        <option value="cone">Cone</option>
+        <option value="cylinder">Cylinder</option>
+      </select>
+
+      <label for="radius">Orbit Radius</label>
+      <input id="radius" type="number" min="1" max="50" step="0.1" value="8" />
+
+      <label for="azimuth">Azimuth (deg)</label>
+      <input id="azimuth" type="number" step="1" value="45" />
+
+      <label for="elevation">Elevation (deg)</label>
+      <input id="elevation" type="number" step="1" value="20" />
+
+      <label for="stepDeg">WASD Step (deg)</label>
+      <input id="stepDeg" type="number" min="1" max="30" step="1" value="3" />
+
+      <button id="resetBtn">Set angles to 0</button>
+      <button id="outputBtn" style="margin-top:8px;">Output prompt (Space)</button>
+
+      <label for="output">Output</label>
+      <textarea id="output" rows="7" readonly></textarea>
+
+      <div class="help">
+        Controls:<br>
+        W/S = azimuth left/right<br>
+        A/D = elevation up/down<br>
+        Space = output current prompt
+      </div>
+    </aside>
+    <main id="renderHost">
+      <div id="toast">Ready</div>
+    </main>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.165.0/build/three.module.js';
+
+    const host = document.getElementById('renderHost');
+    const toast = document.getElementById('toast');
+    const output = document.getElementById('output');
+
+    const state = {
+      objectType: 'box', radius: 8, azimuth: 45, elevation: 20, stepDeg: 3,
+    };
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color('#0f1116');
+
+    const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    host.appendChild(renderer.domElement);
+
+    const light1 = new THREE.DirectionalLight(0xffffff, 1.0); light1.position.set(5, 8, 4); scene.add(light1);
+    const light2 = new THREE.AmbientLight(0xffffff, 0.35); scene.add(light2);
+
+    const grid = new THREE.GridHelper(20, 20, 0x555555, 0x333333); scene.add(grid);
+
+    let targetMesh;
+    const targetMaterial = new THREE.MeshStandardMaterial({ color: 0x4ea1ff, roughness: 0.4, metalness: 0.1 });
+
+    function buildGeometry(type) {
+      if (type === 'sphere') return new THREE.SphereGeometry(1.2, 48, 32);
+      if (type === 'torus') return new THREE.TorusGeometry(1.0, 0.35, 24, 64);
+      if (type === 'cone') return new THREE.ConeGeometry(1.0, 2.0, 32);
+      if (type === 'cylinder') return new THREE.CylinderGeometry(0.9, 0.9, 2.0, 32);
+      return new THREE.BoxGeometry(2, 2, 2);
+    }
+
+    function setTargetObject(type) {
+      if (targetMesh) {
+        scene.remove(targetMesh);
+        targetMesh.geometry.dispose();
+      }
+      targetMesh = new THREE.Mesh(buildGeometry(type), targetMaterial);
+      targetMesh.position.set(0, 1.2, 0);
+      scene.add(targetMesh);
+      state.objectType = type;
+    }
+
+    function clampElevation(v) { return Math.max(-89, Math.min(89, v)); }
+
+    function updateCamera() {
+      const az = THREE.MathUtils.degToRad(state.azimuth);
+      const el = THREE.MathUtils.degToRad(state.elevation);
+      const target = targetMesh.position;
+      camera.position.set(
+        target.x + state.radius * Math.cos(el) * Math.cos(az),
+        target.y + state.radius * Math.sin(el),
+        target.z + state.radius * Math.cos(el) * Math.sin(az),
+      );
+      camera.lookAt(target);
+    }
+
+    function syncInputs() {
+      document.getElementById('radius').value = state.radius;
+      document.getElementById('azimuth').value = state.azimuth;
+      document.getElementById('elevation').value = state.elevation;
+      document.getElementById('stepDeg').value = state.stepDeg;
+      document.getElementById('objectType').value = state.objectType;
+    }
+
+    function generateOutput() {
+      const yaw = ((state.azimuth + 180 + 540) % 360) - 180;
+      const pitch = -state.elevation;
+      const text = `object=${state.objectType}; radius=${state.radius.toFixed(2)}; azimuth=${state.azimuth.toFixed(2)}; elevation=${state.elevation.toFixed(2)}; yaw=${yaw.toFixed(2)}; pitch=${pitch.toFixed(2)}`;
+      output.value = text;
+      toast.textContent = 'Output generated (Space)';
+    }
+
+    function onResize() {
+      const w = host.clientWidth;
+      const h = host.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h, false);
+    }
+
+    document.getElementById('objectType').addEventListener('change', (e) => {
+      setTargetObject(e.target.value);
+      updateCamera();
+    });
+
+    document.getElementById('radius').addEventListener('input', (e) => {
+      state.radius = Number(e.target.value) || 8;
+      updateCamera();
+    });
+    document.getElementById('azimuth').addEventListener('input', (e) => {
+      state.azimuth = Number(e.target.value) || 0;
+      updateCamera();
+    });
+    document.getElementById('elevation').addEventListener('input', (e) => {
+      state.elevation = clampElevation(Number(e.target.value) || 0);
+      e.target.value = state.elevation;
+      updateCamera();
+    });
+    document.getElementById('stepDeg').addEventListener('input', (e) => {
+      state.stepDeg = Math.max(1, Number(e.target.value) || 3);
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      state.azimuth = 0;
+      state.elevation = 0;
+      syncInputs();
+      updateCamera();
+      toast.textContent = 'Angles reset to 0';
+    });
+
+    document.getElementById('outputBtn').addEventListener('click', generateOutput);
+
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        generateOutput();
+        return;
+      }
+      if (e.code === 'KeyW') state.azimuth -= state.stepDeg;
+      else if (e.code === 'KeyS') state.azimuth += state.stepDeg;
+      else if (e.code === 'KeyA') state.elevation = clampElevation(state.elevation + state.stepDeg);
+      else if (e.code === 'KeyD') state.elevation = clampElevation(state.elevation - state.stepDeg);
+      else return;
+      syncInputs();
+      updateCamera();
+      toast.textContent = `WASD rotate -> az ${state.azimuth.toFixed(1)} / el ${state.elevation.toFixed(1)}`;
+    });
+
+    window.addEventListener('resize', onResize);
+
+    setTargetObject(state.objectType);
+    syncInputs();
+    onResize();
+    updateCamera();
+
+    renderer.setAnimationLoop(() => {
+      if (targetMesh) targetMesh.rotation.y += 0.003;
+      renderer.render(scene, camera);
+    });
+  </script>
+</body>
+</html>
