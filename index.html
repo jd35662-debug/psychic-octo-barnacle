@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pro_33.8.9</title>
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      margin: 0;
+      background: #050505;
+      color: #e8e8e8;
+      font-family: "Courier New", monospace;
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+    }
+    #wrap {
+      width: min(980px, 96vw);
+      display: grid;
+      grid-template-columns: 640px 1fr;
+      gap: 16px;
+    }
+    canvas {
+      width: 640px;
+      height: 480px;
+      image-rendering: pixelated;
+      border: 2px solid #666;
+      background: #000;
+    }
+    #panel {
+      border: 2px solid #666;
+      padding: 10px;
+      background: #0d0d0d;
+      white-space: pre-wrap;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    h1 { margin: 0 0 8px; font-size: 17px; }
+    .tag { color: #7af; }
+    .warn { color: #f99; }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <canvas id="game" width="320" height="240"></canvas>
+    <div id="panel"></div>
+  </div>
+<script>
+const c = document.getElementById('game');
+const ctx = c.getContext('2d');
+const panel = document.getElementById('panel');
+
+const TILE = 16;
+const MAP_W = 20;
+const MAP_H = 15;
+
+const keys = new Set();
+addEventListener('keydown', e => keys.add(e.key.toLowerCase()));
+addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
+
+const state = {
+  area: 'ruins',
+  x: 2, y: 7,
+  hp: 20, maxHp: 20,
+  canon: 100,
+  weird: 0,
+  msg: 'You fell. It still feels like the original script.',
+  logs: ['boot: pro_33.8.9', 'route: canon-compatible'],
+  flags: { metPapyrus: false, papyrus404: false, hasPatch: false },
+  time: 0,
+  frame: 0,
+};
+
+const maps = {
+  ruins: mkMap('ruins'),
+  snowdin: mkMap('snowdin'),
+  glitch: mkMap('glitch'),
+  nullcore: mkMap('nullcore'),
+};
+
+function mkMap(name){
+  const arr = Array.from({length: MAP_H}, ()=>Array(MAP_W).fill(0));
+  for(let x=0;x<MAP_W;x++){arr[0][x]=1; arr[MAP_H-1][x]=1;}
+  for(let y=0;y<MAP_H;y++){arr[y][0]=1; arr[y][MAP_W-1]=1;}
+  if(name==='ruins'){ arr[7][18]=2; }
+  if(name==='snowdin'){ arr[7][1]=2; arr[7][18]=3; }
+  if(name==='glitch'){
+    for(let y=3;y<12;y++) arr[y][10]=1;
+    arr[2][18]=4;
+  }
+  if(name==='nullcore'){
+    for(let i=2;i<18;i++) if(i%2===0) arr[5][i]=1;
+    arr[13][18]=5;
+  }
+  return arr;
+}
+
+function log(s){
+  state.logs.unshift(s);
+  state.logs = state.logs.slice(0,8);
+}
+
+function interact(){
+  const t = maps[state.area][state.y][state.x];
+  if(state.area==='snowdin' && t===3 && !state.flags.papyrus404){
+    state.flags.papyrus404 = true;
+    state.canon -= 25;
+    state.weird += 25;
+    state.msg = 'PAPYRUS fight failed to load. fallback://SCRAPED_VARIANT engaged.';
+    log('ERR 404 papyrus_battle_script');
+    state.area='glitch'; state.x=2; state.y=2;
+  } else if(state.area==='glitch' && t===4){
+    state.msg='You found a patch shard. You can still return, for now.';
+    state.flags.hasPatch = true;
+    state.canon += 10;
+    state.weird += 10;
+    log('pickup: PATCH_SHARD_01');
+  } else if(state.area==='nullcore' && t===5){
+    if(state.flags.hasPatch){
+      state.msg='Ending: Archive Route. Canon and weird co-exist.';
+      log('ending: archive');
+    } else {
+      state.msg='Ending: Obsolescence. The game prefers corruption.';
+      log('ending: obsolescence');
+    }
+  }
+}
+
+function move(dx,dy){
+  const nx=state.x+dx, ny=state.y+dy;
+  const map=maps[state.area];
+  if(nx<0||ny<0||nx>=MAP_W||ny>=MAP_H) return;
+  if(map[ny][nx]===1) return;
+  state.x=nx; state.y=ny;
+
+  if(state.area==='ruins' && map[ny][nx]===2){
+    state.area='snowdin'; state.x=2; state.y=7;
+    state.msg='Snowdin appears intact. A skeleton waits ahead.';
+    log('zone: snowdin');
+  }
+  if(state.area==='snowdin' && map[ny][nx]===2){
+    state.area='ruins'; state.x=17; state.y=7;
+  }
+  if(state.area==='glitch' && nx===18 && ny===13){
+    state.area='nullcore'; state.x=1; state.y=13;
+    state.msg='NULL_CORE: rooms are half-compiled.';
+    state.canon -= 15; state.weird += 15;
+    log('zone: nullcore');
+  }
+}
+
+function update(dt){
+  state.time += dt;
+  state.frame++;
+
+  if(keys.has('arrowup')||keys.has('w')){ move(0,-1); keys.delete('arrowup'); keys.delete('w'); }
+  if(keys.has('arrowdown')||keys.has('s')){ move(0,1); keys.delete('arrowdown'); keys.delete('s'); }
+  if(keys.has('arrowleft')||keys.has('a')){ move(-1,0); keys.delete('arrowleft'); keys.delete('a'); }
+  if(keys.has('arrowright')||keys.has('d')){ move(1,0); keys.delete('arrowright'); keys.delete('d'); }
+  if(keys.has('e')){ interact(); keys.delete('e'); }
+
+  if(state.flags.papyrus404){
+    if(Math.random()<0.025){
+      state.weird = Math.min(100, state.weird + 1);
+      state.canon = Math.max(0, state.canon - 1);
+    }
+  }
+}
+
+function drawMap(){
+  const map = maps[state.area];
+  const odd = state.weird/100;
+  for(let y=0;y<MAP_H;y++) for(let x=0;x<MAP_W;x++){
+    const t = map[y][x];
+    let color = '#111';
+    if(t===1) color = odd>0.4 && (x+y+state.frame)%7===0 ? '#4f005e' : '#2b2b2b';
+    if(t===2) color = '#204060';
+    if(t===3) color = '#406020';
+    if(t===4) color = '#605020';
+    if(t===5) color = '#602020';
+
+    if(state.weird>35 && Math.random()<odd*0.08){
+      color = ['#f0f','#0ff','#ff0','#fff'][Math.floor(Math.random()*4)];
+    }
+
+    const ox = (state.weird>60 && Math.random()<0.2) ? (Math.random()*2-1)*odd*4 : 0;
+    const oy = (state.weird>60 && Math.random()<0.2) ? (Math.random()*2-1)*odd*4 : 0;
+    ctx.fillStyle = color;
+    ctx.fillRect(x*TILE+ox, y*TILE+oy, TILE, TILE);
+  }
+}
+
+function drawPlayer(){
+  const odd = state.weird/100;
+  ctx.fillStyle = odd > 0.55 && state.frame%10<5 ? '#ff66ff' : '#ff2a2a';
+  ctx.fillRect(state.x*TILE+4, state.y*TILE+4, 8, 8);
+  if(odd>0.7){
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(state.x*TILE+2, state.y*TILE+2, 2,2);
+  }
+}
+
+function drawUI(){
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 224, 320, 16);
+  ctx.fillStyle = '#fff';
+  ctx.font = '8px monospace';
+  ctx.fillText(`HP ${state.hp}/${state.maxHp} CANON ${state.canon}% WEIRD ${state.weird}% AREA ${state.area}`, 4, 234);
+
+  panel.innerHTML = `<h1>pro_33.8.9 <span class="tag">unstable branch</span></h1>
+Controls: Arrow/WASD move, E interact\n\n${state.msg}\n\nRecent Logs:\n${state.logs.map(s=>`- ${s}`).join('\n')}\n\n${state.weird>50?'<span class="warn">warning: canonical drift accelerating</span>':''}`;
+}
+
+let last = performance.now();
+function loop(now){
+  const dt = (now-last)/1000; last = now;
+  update(dt);
+  ctx.clearRect(0,0,320,240);
+  drawMap();
+  drawPlayer();
+  drawUI();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
