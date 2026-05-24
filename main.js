@@ -70,18 +70,78 @@ for (let i = 0; i < 6; i++) {
   statueSlots.push({ holder, model: null });
 }
 
+const DEFAULT_PAINTING_SIZES = [
+  { label: '8x10', w: 1.6, h: 2.0 },
+  { label: '11x14', w: 1.9, h: 2.4 },
+  { label: '16x20', w: 2.0, h: 2.5 },
+  { label: '24x36', w: 2.2, h: 3.3 }
+];
+
 const paintingMeshes = [];
-function addPainting(x, y, z, ry, texture = null) {
-  const mat = new THREE.MeshStandardMaterial({ color: '#e6e0d0', map: texture });
-  const frame = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.6, 0.08), mat);
-  frame.position.set(x, y, z);
+function createRandomPlaceholderTexture(sizeLabel) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 1024;
+  const ctx = canvas.getContext('2d');
+
+  const colorSet = ['#e63946', '#f4a261', '#f1fa8c', '#06d6a0', '#118ab2', '#7b2cbf', '#f72585', '#4cc9f0'];
+  const randomColor = () => colorSet[Math.floor(Math.random() * colorSet.length)];
+
+  ctx.fillStyle = randomColor();
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  for (let i = 0; i < 16; i++) {
+    ctx.fillStyle = randomColor();
+    const shapeType = Math.floor(Math.random() * 3);
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height;
+    const w = 80 + Math.random() * 400;
+    const h = 80 + Math.random() * 400;
+
+    if (shapeType === 0) {
+      ctx.fillRect(x, y, w, h);
+    } else if (shapeType === 1) {
+      ctx.beginPath();
+      ctx.arc(x, y, Math.random() * 180 + 40, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + w, y + h * 0.3);
+      ctx.lineTo(x + w * 0.4, y + h);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+
+  ctx.fillStyle = 'rgba(0,0,0,0.38)';
+  ctx.fillRect(14, canvas.height - 84, 290, 56);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 44px sans-serif';
+  ctx.fillText(sizeLabel, 28, canvas.height - 44);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.needsUpdate = true;
+  return texture;
+}
+
+function addPainting(x, y, z, ry) {
+  const size = DEFAULT_PAINTING_SIZES[Math.floor(Math.random() * DEFAULT_PAINTING_SIZES.length)];
+  const mat = new THREE.MeshStandardMaterial({
+    color: '#f5efe2',
+    map: createRandomPlaceholderTexture(size.label),
+    roughness: 0.88
+  });
+  const frame = new THREE.Mesh(new THREE.BoxGeometry(size.w, size.h, 0.08), mat);
+  frame.position.set(x, y + size.h / 3.2, z);
   frame.rotation.y = ry;
   scene.add(frame);
   paintingMeshes.push(frame);
 }
 for (let i = -6; i <= 6; i += 2) {
-  addPainting(-room.width / 2 + 0.05, 2.8, i * 3.6, Math.PI / 2);
-  addPainting(room.width / 2 - 0.05, 2.8, i * 3.6, -Math.PI / 2);
+  addPainting(-room.width / 2 + 0.05, 1.8, i * 3.6, Math.PI / 2);
+  addPainting(room.width / 2 - 0.05, 1.8, i * 3.6, -Math.PI / 2);
 }
 
 const loader = new GLTFLoader();
