@@ -62,12 +62,41 @@ scene.add(spot);
 
 const room = { width: 16, length: 60, height: 8 };
 
-const walls = new THREE.Mesh(
-  new THREE.BoxGeometry(room.width, room.height, room.length),
-  new THREE.MeshStandardMaterial({ color: '#3d2f69', side: THREE.BackSide, roughness: 0.95 })
+const corridor = new THREE.Group();
+scene.add(corridor);
+
+const floorBase = new THREE.Mesh(
+  new THREE.BoxGeometry(room.width, 0.2, room.length),
+  new THREE.MeshStandardMaterial({ color: '#2f2c38', roughness: 0.95 })
 );
-walls.position.y = room.height / 2;
-scene.add(walls);
+floorBase.position.set(0, -0.12, 0);
+floorBase.receiveShadow = true;
+corridor.add(floorBase);
+
+const leftWall = new THREE.Mesh(
+  new THREE.BoxGeometry(0.3, room.height, room.length),
+  new THREE.MeshStandardMaterial({ color: '#4a386d', roughness: 0.92 })
+);
+leftWall.position.set(-room.width / 2, room.height / 2, 0);
+corridor.add(leftWall);
+
+const rightWall = leftWall.clone();
+rightWall.position.x = room.width / 2;
+corridor.add(rightWall);
+
+const backWall = new THREE.Mesh(
+  new THREE.BoxGeometry(room.width, room.height, 0.3),
+  new THREE.MeshStandardMaterial({ color: '#4b3a70', roughness: 0.9 })
+);
+backWall.position.set(0, room.height / 2, -room.length / 2);
+corridor.add(backWall);
+
+const ceiling = new THREE.Mesh(
+  new THREE.BoxGeometry(room.width, 0.3, room.length),
+  new THREE.MeshStandardMaterial({ color: '#2c2838', roughness: 0.8 })
+);
+ceiling.position.set(0, room.height, 0);
+corridor.add(ceiling);
 
 const tileGroup = new THREE.Group();
 scene.add(tileGroup);
@@ -87,11 +116,28 @@ for (let z = 0; z < rows; z++) {
   }
 }
 
+const ceilingPanelMat = new THREE.MeshStandardMaterial({ color: '#f3f4f7', emissive: '#e5e7f2', emissiveIntensity: 0.35 });
+for (let i = 0; i < 11; i++) {
+  const panel = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.08, 1), ceilingPanelMat);
+  panel.position.set(0, room.height - 0.22, 22 - i * 4.8);
+  corridor.add(panel);
+  const panelLight = new THREE.PointLight('#ffffff', 0.35, 14, 2);
+  panelLight.position.set(panel.position.x, panel.position.y - 0.35, panel.position.z);
+  corridor.add(panelLight);
+}
+
 const pedMat = new THREE.MeshStandardMaterial({ color: '#d7d7dd', roughness: 0.55 });
 const statueSlots = [];
 for (let i = 0; i < 6; i++) {
   const pedestal = new THREE.Mesh(new THREE.CylinderGeometry(1, 1.2, 1.4, 32), pedMat);
-  pedestal.position.set((i - 2.5) * 2.3, 0.7, -22);
+  if (i === 0) {
+    pedestal.position.set(0, 1.75, -26.5);
+    pedestal.scale.setScalar(1.2);
+  } else {
+    const side = i % 2 === 0 ? -1 : 1;
+    const lane = Math.ceil(i / 2);
+    pedestal.position.set(side * (room.width / 2 - 1.6), 0.7, -6 - lane * 8.2);
+  }
   pedestal.castShadow = true;
   pedestal.receiveShadow = true;
   scene.add(pedestal);
@@ -100,6 +146,12 @@ for (let i = 0; i < 6; i++) {
   scene.add(holder);
   statueSlots.push({ holder, model: null });
 }
+
+const heroPedestal = new THREE.Mesh(new THREE.CylinderGeometry(1.35, 1.55, 1.8, 40), pedMat);
+heroPedestal.position.set(0, 0.9, -26.5);
+heroPedestal.castShadow = true;
+heroPedestal.receiveShadow = true;
+scene.add(heroPedestal);
 
 const DEFAULT_PAINTING_SIZES = [
   { label: '8x10', w: 1.6, h: 2.0 },
