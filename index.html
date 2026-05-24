@@ -7,29 +7,38 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div id="hud">
+    <div id="hud" class="hidden">
       <h1>3D Gallery Explorer</h1>
       <div class="controls">
         <button id="lockBtn">Enter Explore Mode</button>
-        <label>
-          Statue Slot
-          <select id="slotSelect"></select>
-        </label>
-        <label>
-          Statue Model (.glb/.gltf only)
-          <input id="statueInput" type="file" accept=".glb,.gltf,model/gltf-binary,model/gltf+json" multiple />
-        </label>
-        <label>
-          Paintings (images: .png .jpg .jpeg .webp .gif)
-          <input id="paintingInput" type="file" accept="image/*" multiple />
-        </label>
+
+        <fieldset>
+          <legend>Statue Slots</legend>
+          <label>Statue Slot
+            <select id="slotSelect"></select>
+          </label>
+          <label>Load Statue (.glb/.gltf)
+            <input id="statueInput" type="file" accept=".glb,.gltf,model/gltf-binary,model/gltf+json" multiple />
+          </label>
+          <button id="clearStatueBtn" type="button">Clear Selected Statue Slot</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Painting Slots</legend>
+          <label>Painting Slot
+            <select id="paintingSlotSelect"></select>
+          </label>
+          <label>Load Painting (.png .jpg .jpeg .webp .gif)
+            <input id="paintingInput" type="file" accept="image/*" multiple />
+          </label>
+          <button id="clearPaintingBtn" type="button">Clear Selected Painting Slot</button>
+        </fieldset>
       </div>
       <p>
-        Use <strong>WASD</strong> to move, <strong>mouse</strong> to look around.<br />
-        Upload files from your local <code>statues</code> and <code>paintings</code> folders.
+        Press <strong>ESC</strong> to open/close this menu. Use <strong>WASD</strong> to move, mouse to look around.
       </p>
     </div>
-    <div id="info">Click "Enter Explore Mode" (or click the scene) to start.</div>
+    <div id="info">Press ESC to open menu. Start at gallery entrance and walk forward.</div>
 
     <script type="module" src="main.js"></script>
   </body>
