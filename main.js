@@ -17,7 +17,38 @@ document.body.appendChild(renderer.domElement);
 
 const controls = new PointerLockControls(camera, renderer.domElement);
 const lockBtn = document.getElementById('lockBtn');
-lockBtn.addEventListener('click', () => (controls.isLocked ? controls.unlock() : controls.lock()));
+const info = document.getElementById('info');
+
+function tryLock() {
+  try {
+    controls.lock();
+  } catch (error) {
+    console.error('Pointer lock request failed.', error);
+    info.textContent = 'Explore mode failed. Click directly on the 3D scene and ensure the browser tab is focused.';
+  }
+}
+
+lockBtn.addEventListener('click', () => {
+  if (controls.isLocked) {
+    controls.unlock();
+    return;
+  }
+  tryLock();
+});
+
+renderer.domElement.addEventListener('click', () => {
+  if (!controls.isLocked) tryLock();
+});
+
+controls.addEventListener('lock', () => {
+  lockBtn.textContent = 'Exit Explore Mode';
+  info.textContent = 'Explore mode active: WASD to move, mouse to look, ESC to unlock.';
+});
+
+controls.addEventListener('unlock', () => {
+  lockBtn.textContent = 'Enter Explore Mode';
+  info.textContent = 'Click "Enter Explore Mode" or click the scene to start exploring.';
+});
 
 const keys = new Set();
 addEventListener('keydown', e => keys.add(e.code));
