@@ -17,3 +17,24 @@ Then open:
 - http://localhost:8000
 
 If you run with a different Python version, the launcher exits with an explicit message.
+
+
+## Windows error fix (the one in your screenshot)
+If you double-click `main.js`, Windows may open **Windows Script Host** and show a JavaScript syntax error.
+That happens because this file is browser module code, not a standalone Windows script.
+
+Use one of these instead:
+
+```bat
+run_game.bat
+```
+
+or
+
+```bat
+py -3.14 run_game.py
+```
+
+Then open `http://localhost:8000` in your browser.
+
+Important: open `index.html` in the browser via the local server URL, and do **not** run `main.js` directly.
