@@ -38,3 +38,15 @@ py -3.14 run_game.py
 Then open `http://localhost:8000` in your browser.
 
 Important: open `index.html` in the browser via the local server URL, and do **not** run `main.js` directly.
+
+
+## If you see "Directory listing for /"
+That means the server started, but your browser is pointed at the folder root view instead of the game page.
+
+Use this exact URL:
+
+- http://localhost:8000/index.html
+
+I also updated `run_game.py` to:
+- always serve from the project folder containing `index.html`
+- open `http://localhost:8000/index.html` automatically

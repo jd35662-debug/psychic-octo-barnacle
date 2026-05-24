@@ -7,6 +7,7 @@ import http.server
 import pathlib
 import socketserver
 import sys
+import webbrowser
 
 REQUIRED_VERSION = (3, 14, 5)
 PORT = 8000
@@ -29,9 +30,18 @@ def main() -> None:
     socketserver.TCPServer.allow_reuse_address = True
 
     with socketserver.TCPServer(("", PORT), handler) as httpd:
-        print(f"3D Gallery running at http://localhost:{PORT}")
+        # Ensure the server root is this project folder (where index.html lives).
+        import os
+        os.chdir(root)
+
+        app_url = f"http://localhost:{PORT}/index.html"
+        print(f"3D Gallery running at {app_url}")
         print(f"Serving files from: {root}")
         print("Press Ctrl+C to stop.")
+        try:
+            webbrowser.open(app_url)
+        except Exception:
+            pass
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
