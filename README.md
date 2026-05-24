@@ -50,3 +50,12 @@ Use this exact URL:
 I also updated `run_game.py` to:
 - always serve from the project folder containing `index.html`
 - open `http://localhost:8000/index.html` automatically
+
+
+## 404 error while running
+If you see `Error code: 404 File not found`, make sure you are opening one of these URLs:
+
+- `http://localhost:8000/`
+- `http://localhost:8000/index.html`
+
+The launcher now forces `/` to load `index.html` and serves files from the project folder directly.

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import functools
 import http.server
 import pathlib
 import socketserver
@@ -23,17 +24,23 @@ def ensure_python_3145() -> None:
         )
 
 
+class GameRequestHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self) -> None:
+        if self.path in ("/", ""):
+            self.path = "/index.html"
+        return super().do_GET()
+
+
 def main() -> None:
     ensure_python_3145()
     root = pathlib.Path(__file__).resolve().parent
-    handler = http.server.SimpleHTTPRequestHandler
+
+    # Bind handler directly to project directory so requests always resolve
+    # relative to this repo, regardless of calling shell location.
+    handler = functools.partial(GameRequestHandler, directory=str(root))
     socketserver.TCPServer.allow_reuse_address = True
 
     with socketserver.TCPServer(("", PORT), handler) as httpd:
-        # Ensure the server root is this project folder (where index.html lives).
-        import os
-        os.chdir(root)
-
         app_url = f"http://localhost:{PORT}/index.html"
         print(f"3D Gallery running at {app_url}")
         print(f"Serving files from: {root}")
