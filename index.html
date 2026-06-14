@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PROJECT THRESHOLD // SCP-7912</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main id="app" class="screen">
+      <section id="briefing" class="panel briefing-panel">
+        <p class="eyebrow">FOUNDATION FIELD ORDER // D-9341</p>
+        <h1>PROJECT THRESHOLD</h1>
+        <p>
+          Enter SCP-7912, collect the requested samples, photograph anomalies, and return to the containment
+          chamber before the mission window closes. Escape is not the objective. Data is.
+        </p>
+        <div class="briefing-grid">
+          <div>
+            <h2>MISSION WINDOW</h2>
+            <strong>30:00</strong>
+          </div>
+          <div>
+            <h2>PRIMARY RULES</h2>
+            <ul>
+              <li>Every chamber must resemble a room.</li>
+              <li>Gravity remains locally functional.</li>
+              <li>Everything else is negotiable.</li>
+            </ul>
+          </div>
+        </div>
+        <button id="startButton">Open the front door</button>
+      </section>
+
+      <section id="game" class="game hidden" aria-live="polite">
+        <aside class="hud panel">
+          <p class="eyebrow">SCP-7912 // THRESHOLD HOUSE</p>
+          <div class="readout critical" id="timer">30:00</div>
+          <div class="meter-block">
+            <label for="sanityFill">Sanity</label>
+            <div class="meter"><span id="sanityFill"></span></div>
+          </div>
+          <div class="meter-block">
+            <label for="depthFill">Depth</label>
+            <div class="meter"><span id="depthFill"></span></div>
+          </div>
+          <h2>Recovery List</h2>
+          <ul id="recoveryList" class="checklist"></ul>
+          <h2>Controls</h2>
+          <p class="controls">W/A/S/D or arrow buttons to move. Photograph anomalies. Return through the entrance tile.</p>
+        </aside>
+
+        <section class="viewport panel">
+          <div class="radio" id="radioLog"></div>
+          <div class="room-card" id="roomCard"></div>
+          <div class="room-visual" id="roomVisual">
+            <div class="reticle"></div>
+          </div>
+          <div class="actions">
+            <button data-action="north">North</button>
+            <button data-action="west">West</button>
+            <button data-action="photo">Photograph</button>
+            <button data-action="sample">Collect</button>
+            <button data-action="east">East</button>
+            <button data-action="south">South</button>
+          </div>
+        </section>
+
+        <aside class="panel report-panel">
+          <h2>Auto Report</h2>
+          <ol id="reportLog" class="report-log"></ol>
+        </aside>
+      </section>
+
+      <section id="debrief" class="panel debrief hidden"></section>
+    </main>
+    <script src="game.js"></script>
+  </body>
+</html>
