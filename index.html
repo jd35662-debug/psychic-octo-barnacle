@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Liminal Maze Prototype</title>
+  <link rel="stylesheet" href="src/styles.css" />
+</head>
+<body>
+  <canvas id="game" aria-label="First person liminal maze game"></canvas>
+  <div id="hud">
+    <div id="seedLabel"></div>
+    <div id="themeLabel"></div>
+    <div class="hint">WASD move · Shift sprint · Ctrl/C crouch · Mouse look · Esc pause · M map</div>
+  </div>
+  <div id="menu" class="panel">
+    <h1>Liminal Maze</h1>
+    <p>Explore an endless-feeling maze of offices, utilities, malls, workspaces, and storage aisles. There are no enemies or objectives—only navigation, atmosphere, and discovery.</p>
+    <label>Seed <input id="seedInput" placeholder="random" /></label>
+    <label>Fog <input id="fogSlider" type="range" min="0" max="1" step="0.01" value="0.58" /></label>
+    <label>Mouse sensitivity <input id="sensSlider" type="range" min="0.5" max="2.5" step="0.05" value="1" /></label>
+    <button id="startButton">Enter Maze</button>
+    <button id="resumeButton" hidden>Resume</button>
+    <p class="small">Tip: transition rooms—stairwells, elevators, service corridors, loading docks, and tunnels—blend one theme into the next.</p>
+  </div>
+  <script src="src/game.js"></script>
+</body>
+</html>
