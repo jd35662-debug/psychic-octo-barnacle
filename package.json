@@ -1,0 +1,13 @@
+{
+  "name": "local-home-net",
+  "version": "1.0.0",
+  "description": "A local-only home network dashboard with home server, video, micro-post, media, and utility pages.",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check public/app.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
