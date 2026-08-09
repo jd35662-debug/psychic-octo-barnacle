@@ -6,6 +6,8 @@ A simple local-network home intranet starter. Run it on one home server or compu
 - A YouTube-style `LocalTube` area for videos and tutorials.
 - A Twitter-style `Chirp` feed for blurbs, text, GIF links, image links, and announcements.
 - Household shortcut cards that act like local intranet sites for files, media, chores, shopping, manuals, emergency contacts, and calendar.
+- Several skins/themes, including dark mode, light mode, forest, ocean, and candy.
+- A LocalTube ad module that loads server-operator media from the `add/` folder.
 
 ## Run on your local internet / LAN
 
@@ -22,6 +24,10 @@ If you only want same-computer access, run:
 ```bash
 HOST=127.0.0.1 npm start
 ```
+
+## LocalTube ads
+
+Put `.gif`, `.png`, `.jpg`, `.jpeg`, `.webp`, `.svg`, `.mp4`, `.webm`, or `.txt` files in the `add/` folder. The LocalTube ad module lists that folder through the local server and displays one item at random.
 
 ## Checks
 

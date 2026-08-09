@@ -8,8 +8,11 @@ const siteForm = document.querySelector('#siteForm');
 const siteName = document.querySelector('#siteName');
 const siteUrl = document.querySelector('#siteUrl');
 const siteIcon = document.querySelector('#siteIcon');
+const skinChoices = document.querySelectorAll('.skin-choice');
+const adSlot = document.querySelector('#adSlot');
 const postStorageKey = 'local-home-net-posts';
 const siteStorageKey = 'local-home-net-sites';
+const themeStorageKey = 'local-home-net-theme';
 
 const defaultSites = [
   { name: 'Files', url: '/files', icon: '📁', description: 'Shared documents and photos' },
@@ -34,6 +37,63 @@ const starterPosts = [
     createdAt: 'Demo post'
   }
 ];
+
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem(themeStorageKey, theme);
+  skinChoices.forEach((choice) => {
+    choice.setAttribute('aria-pressed', String(choice.dataset.theme === theme));
+  });
+}
+
+function loadTheme() {
+  applyTheme(localStorage.getItem(themeStorageKey) || 'dark');
+}
+
+function renderAd(ad) {
+  adSlot.innerHTML = '';
+  const ext = ad.type.toLowerCase();
+  const caption = document.createElement('strong');
+  caption.textContent = ad.name;
+
+  if (['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'].includes(ext)) {
+    const image = document.createElement('img');
+    image.src = ad.url;
+    image.alt = `LocalTube ad: ${ad.name}`;
+    image.loading = 'lazy';
+    adSlot.append(image, caption);
+    return;
+  }
+
+  if (['.mp4', '.webm'].includes(ext)) {
+    const video = document.createElement('video');
+    video.src = ad.url;
+    video.controls = true;
+    video.muted = true;
+    video.loop = true;
+    adSlot.append(video, caption);
+    return;
+  }
+
+  const textLink = document.createElement('a');
+  textLink.href = ad.url;
+  textLink.textContent = `Open ${ad.name}`;
+  adSlot.append(textLink, caption);
+}
+
+async function loadAds() {
+  if (!adSlot) return;
+  try {
+    const response = await fetch('/api/ads', { cache: 'no-store' });
+    if (!response.ok) throw new Error('Ad list failed');
+    const { ads } = await response.json();
+    if (!ads.length) return;
+    renderAd(ads[Math.floor(Math.random() * ads.length)]);
+  } catch (error) {
+    adSlot.textContent = 'Ad folder could not be read right now.';
+  }
+}
 
 function updateLanAddress() {
   if (!lanAddress) return;
@@ -140,6 +200,10 @@ form.addEventListener('submit', (event) => {
   renderPosts();
 });
 
+skinChoices.forEach((choice) => {
+  choice.addEventListener('click', () => applyTheme(choice.dataset.theme));
+});
+
 siteForm.addEventListener('submit', (event) => {
   event.preventDefault();
   const name = siteName.value.trim();
@@ -156,6 +220,8 @@ siteForm.addEventListener('submit', (event) => {
   renderSites();
 });
 
+loadTheme();
 updateLanAddress();
 renderSites();
 renderPosts();
+loadAds();

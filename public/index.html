@@ -16,11 +16,12 @@
       <a href="#sites">All Sites</a>
       <a href="#tutorial">Tutorial</a>
       <a href="#maker">Site Maker</a>
+      <a href="#skins">Skins</a>
     </nav>
     <div>
       <p class="eyebrow">Local-only family intranet</p>
       <h1>Simple Home Net</h1>
-      <p class="lede">A private dashboard for your house with a home page of local site hyperlinks, a tutorial, a site maker, server status, LocalTube, Chirp, and household tools that multiple computers can use on your LAN.</p>
+      <p class="lede">A private dashboard for your house with a home page of local site hyperlinks, a tutorial, skins, a site maker, server status, LocalTube with local ads, Chirp, and household tools that multiple computers can use on your LAN.</p>
       <div class="actions">
         <a class="button" href="#server">Check server</a>
         <a class="button secondary" href="#chirp">Post a blurb</a>
@@ -61,6 +62,21 @@
       </article>
     </section>
 
+
+    <section id="skins" class="panel">
+      <div class="section-heading">
+        <p class="eyebrow">Skins</p>
+        <h2>Choose a home net look</h2>
+      </div>
+      <div class="skin-grid" role="group" aria-label="Theme picker">
+        <button class="skin-choice" type="button" data-theme="dark">🌙 Dark mode</button>
+        <button class="skin-choice" type="button" data-theme="light">☀️ Light mode</button>
+        <button class="skin-choice" type="button" data-theme="forest">🌲 Forest</button>
+        <button class="skin-choice" type="button" data-theme="ocean">🌊 Ocean</button>
+        <button class="skin-choice" type="button" data-theme="candy">🍬 Candy</button>
+      </div>
+    </section>
+
     <section id="server" class="panel">
       <div class="section-heading">
         <p class="eyebrow">Operations</p>
@@ -93,6 +109,14 @@
         <article class="video-card"><div class="thumb kitchen">▶</div><h3>Grandma's pasta walkthrough</h3><p>Kitchen · 12 min · Recipe</p></article>
         <article class="video-card"><div class="thumb garden">▶</div><h3>Garden timelapse</h3><p>Backyard Cam · GIF-ready</p></article>
       </div>
+      <aside class="ad-module" aria-label="LocalTube ads from add folder">
+        <div>
+          <p class="eyebrow">LocalTube ad mod</p>
+          <h3>Server operator ads</h3>
+          <p class="muted">Drop GIFs, images, videos, SVGs, or text files into the <code>add/</code> folder. They appear here automatically.</p>
+        </div>
+        <div id="adSlot" class="ad-slot">No ads found in <code>add/</code> yet.</div>
+      </aside>
     </section>
 
     <section id="chirp" class="panel">
