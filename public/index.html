@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Local Home Net</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <nav class="topbar" aria-label="Primary navigation">
+      <a href="#dashboard">Home Net</a>
+      <a href="#server">Home Server</a>
+      <a href="#tube">LocalTube</a>
+      <a href="#chirp">Chirp</a>
+      <a href="#sites">All Sites</a>
+      <a href="#tutorial">Tutorial</a>
+      <a href="#maker">Site Maker</a>
+      <a href="#skins">Skins</a>
+    </nav>
+    <div>
+      <p class="eyebrow">Local-only family intranet</p>
+      <h1>Simple Home Net</h1>
+      <p class="lede">A private dashboard for your house with a home page of local site hyperlinks, a tutorial, skins, a site maker, server status, LocalTube with local ads, Chirp, and household tools that multiple computers can use on your LAN.</p>
+      <div class="actions">
+        <a class="button" href="#server">Check server</a>
+        <a class="button secondary" href="#chirp">Post a blurb</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="dashboard">
+
+    <section id="home" class="panel home-directory">
+      <div class="section-heading">
+        <p class="eyebrow">Home page</p>
+        <h2>All local sites</h2>
+      </div>
+      <p class="muted">Use this as your home page on every computer. Each link opens a local intranet area served by this home server.</p>
+      <ul id="siteList" class="link-list"></ul>
+    </section>
+    <section class="grid cards" aria-label="Network overview">
+      <article class="card accent">
+        <span class="icon">🏠</span>
+        <h2>Home LAN</h2>
+        <p>Designed to run on a trusted private LAN address so household computers can share the same local intranet.</p>
+      </article>
+      <article class="card">
+        <span class="icon">🗄️</span>
+        <h2>Home Server</h2>
+        <p>Track backups, file shares, print queue, DNS, and media services in one place.</p>
+      </article>
+      <article class="card">
+        <span class="icon">🎬</span>
+        <h2>LocalTube</h2>
+        <p>A YouTube-style page for family videos, tutorials, saved clips, and watch lists.</p>
+      </article>
+      <article class="card">
+        <span class="icon">💬</span>
+        <h2>Chirp</h2>
+        <p>A Twitter-style local feed for blurbs, announcements, GIFs, pictures, and quick updates.</p>
+      </article>
+    </section>
+
+
+    <section id="skins" class="panel">
+      <div class="section-heading">
+        <p class="eyebrow">Skins</p>
+        <h2>Choose a home net look</h2>
+      </div>
+      <div class="skin-grid" role="group" aria-label="Theme picker">
+        <button class="skin-choice" type="button" data-theme="dark">🌙 Dark mode</button>
+        <button class="skin-choice" type="button" data-theme="light">☀️ Light mode</button>
+        <button class="skin-choice" type="button" data-theme="forest">🌲 Forest</button>
+        <button class="skin-choice" type="button" data-theme="ocean">🌊 Ocean</button>
+        <button class="skin-choice" type="button" data-theme="candy">🍬 Candy</button>
+      </div>
+    </section>
+
+    <section id="server" class="panel">
+      <div class="section-heading">
+        <p class="eyebrow">Operations</p>
+        <h2>Home server console</h2>
+      </div>
+      <div class="server-layout">
+        <div class="status-card online">
+          <strong>Server</strong>
+          <span>Online</span>
+          <small id="lanAddress">http://your-computer-ip:8080</small>
+        </div>
+        <div class="metric"><span>Storage</span><meter value="0.62">62%</meter><strong>62%</strong></div>
+        <div class="metric"><span>Backup</span><meter value="0.91">91%</meter><strong>Last night</strong></div>
+        <div class="metric"><span>Devices</span><meter value="0.48">12</meter><strong>12 active</strong></div>
+      </div>
+      <ul class="service-list">
+        <li><strong>Files:</strong> Family photos, documents, manuals, and shared folders.</li>
+        <li><strong>Media:</strong> Local videos, music, playlists, and offline watch queues.</li>
+        <li><strong>Utilities:</strong> Printer, calendar, emergency contacts, shopping list, and chores.</li>
+      </ul>
+    </section>
+
+    <section id="tube" class="panel">
+      <div class="section-heading">
+        <p class="eyebrow">Video hub</p>
+        <h2>LocalTube</h2>
+      </div>
+      <div class="video-grid">
+        <article class="video-card"><div class="thumb sunset">▶</div><h3>How to reset the router</h3><p>DadTech · 4 min · Home help</p></article>
+        <article class="video-card"><div class="thumb kitchen">▶</div><h3>Grandma's pasta walkthrough</h3><p>Kitchen · 12 min · Recipe</p></article>
+        <article class="video-card"><div class="thumb garden">▶</div><h3>Garden timelapse</h3><p>Backyard Cam · GIF-ready</p></article>
+      </div>
+      <aside class="ad-module" aria-label="LocalTube ads from add folder">
+        <div>
+          <p class="eyebrow">LocalTube ad mod</p>
+          <h3>Server operator ads</h3>
+          <p class="muted">Drop GIFs, images, videos, SVGs, or text files into the <code>add/</code> folder. They appear here automatically.</p>
+        </div>
+        <div id="adSlot" class="ad-slot">No ads found in <code>add/</code> yet.</div>
+      </aside>
+    </section>
+
+    <section id="chirp" class="panel">
+      <div class="section-heading">
+        <p class="eyebrow">Micro posts</p>
+        <h2>Chirp local feed</h2>
+      </div>
+      <form id="postForm" class="post-form">
+        <label for="postText">Post a blurb, note, GIF URL, or image URL</label>
+        <textarea id="postText" maxlength="240" placeholder="Movie night at 7! Add text, paste a .gif/.png/.jpg link, or write a quick update."></textarea>
+        <button type="submit">Add local post</button>
+      </form>
+      <div id="feed" class="feed" aria-live="polite"></div>
+    </section>
+
+    <section id="sites" class="panel">
+      <div class="section-heading">
+        <p class="eyebrow">Needed local sites</p>
+        <h2>Household intranet sites</h2>
+      </div>
+      <div id="siteGrid" class="site-grid"></div>
+    </section>
+
+    <section id="tutorial" class="panel tutorial">
+      <div class="section-heading">
+        <p class="eyebrow">Tutorial</p>
+        <h2>How to use your home internet</h2>
+      </div>
+      <ol class="steps">
+        <li><strong>Start the server:</strong> run <code>npm start</code> on the home server computer.</li>
+        <li><strong>Find its LAN address:</strong> use your router page or your computer network settings to find an address like <code>192.168.1.25</code>.</li>
+        <li><strong>Open it everywhere:</strong> on each home computer, tablet, or phone, visit <code>http://LAN-IP:8080</code>.</li>
+        <li><strong>Set it as the browser home page:</strong> bookmark the home page so everyone sees the same list of local sites.</li>
+        <li><strong>Add more sites:</strong> use Site Maker below to add custom local links such as a printer page, NAS folder, camera page, or game server.</li>
+      </ol>
+    </section>
+
+    <section id="maker" class="panel">
+      <div class="section-heading">
+        <p class="eyebrow">Site maker</p>
+        <h2>Add a local site link</h2>
+      </div>
+      <form id="siteForm" class="site-form">
+        <label for="siteName">Site name</label>
+        <input id="siteName" maxlength="40" placeholder="Printer, NAS, Minecraft, Camera" required>
+        <label for="siteUrl">Local URL or path</label>
+        <input id="siteUrl" placeholder="/printer or http://192.168.1.50" required>
+        <label for="siteIcon">Icon</label>
+        <input id="siteIcon" maxlength="4" placeholder="🖨️">
+        <button type="submit">Add site to home page</button>
+      </form>
+      <p class="muted">Custom links are saved in this browser for now. Add a shared database later if all devices should edit the same list.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Local Home Net is meant for your home LAN. Posts are stored in each browser for this starter version; connect shared storage later if every device should see the same feed.</p>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>
