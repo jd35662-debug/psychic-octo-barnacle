@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Server Op Settings · Local Home Net</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="operator-page">
+  <main class="operator-shell">
+    <section class="panel">
+      <p class="eyebrow">Server operator only</p>
+      <h1>Local Home Net Settings</h1>
+      <p class="lede">This settings site is only served to browsers running on the server computer itself. LAN visitors receive a 403 response.</p>
+      <div id="operatorStatus" class="settings-grid"></div>
+      <div class="actions">
+        <a class="button" href="/">Back to Home Net</a>
+        <button id="clearLocalData" type="button" class="button secondary">Clear this browser's temp data</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="eyebrow">Operator checklist</p>
+      <h2>Things only the server op should manage</h2>
+      <ul class="service-list">
+        <li>Add LocalTube ad files to the <code>add/</code> folder.</li>
+        <li>Keep the server behind the home router/firewall.</li>
+        <li>Choose whether to run LAN-wide with <code>npm start</code> or same-computer-only with <code>HOST=127.0.0.1 npm start</code>.</li>
+        <li>Back up future shared data before adding a database.</li>
+      </ul>
+    </section>
+  </main>
+  <script>
+    const statusBox = document.querySelector('#operatorStatus');
+    const clearButton = document.querySelector('#clearLocalData');
+
+    function row(label, value) {
+      const card = document.createElement('article');
+      card.className = 'settings-card';
+      const title = document.createElement('strong');
+      const text = document.createElement('span');
+      title.textContent = label;
+      text.textContent = value;
+      card.append(title, text);
+      return card;
+    }
+
+    fetch('/api/operator-settings', { cache: 'no-store' })
+      .then((response) => {
+        if (!response.ok) throw new Error('Forbidden');
+        return response.json();
+      })
+      .then((settings) => {
+        statusBox.append(
+          row('Server bind address', `${settings.host}:${settings.port}`),
+          row('Public folder', settings.publicDir),
+          row('Ad folder', settings.adDir),
+          row('Data folder', settings.dataDir),
+          row('Users / posts / sites', `${settings.userCount} / ${settings.postCount} / ${settings.siteCount}`),
+          row('Local routes', settings.localSiteRoutes.join(', ')),
+          row('Allowed ad types', settings.adExtensions.join(', '))
+        );
+      })
+      .catch(() => {
+        statusBox.append(row('Settings', 'Unavailable from this device. Open /settings on the server computer.'));
+      });
+
+    clearButton.addEventListener('click', () => {
+      localStorage.clear();
+      clearButton.textContent = 'Local browser data cleared';
+    });
+  </script>
+</body>
+</html>
